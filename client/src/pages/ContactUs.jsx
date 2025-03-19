@@ -1,19 +1,35 @@
 import React, { useState } from 'react';
 
 function ContactUs() {
-  // State variables to store form input values
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    //e.preventDefault(); // Prevent the page from reloading
-    // Log the values to the console
-    console.log('Form Submitted:');
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Message:', message);
+  // ✅ Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault(); // Prevent page reload
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      const data = await response.json();  // ✅ Parse JSON response
+      console.log('✅ Server Response in frontend:', data);
+      alert("Message sent successfully!");
+      
+      // Optional: Clear form after submission
+      setName('');
+      setEmail('');
+      setMessage('');
+    } catch (error) {
+      console.error('❌ Error sending message:', error);
+      alert("Failed to send message");
+    }
   };
 
   return (
@@ -28,21 +44,24 @@ function ContactUs() {
           placeholder="Your Name"
           className="w-full p-3 mb-4 border border-gray-300 rounded-lg"
           value={name}
-          onChange={(e) => setName(e.target.value)} // Update name state on input change
+          onChange={(e) => setName(e.target.value)}
+          required
         />
         <input
           type="email"
           placeholder="Your Email"
           className="w-full p-3 mb-4 border border-gray-300 rounded-lg"
           value={email}
-          onChange={(e) => setEmail(e.target.value)} // Update email state on input change
+          onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <textarea
           placeholder="Your Message"
           className="w-full p-3 mb-4 border border-gray-300 rounded-lg"
           rows="4"
           value={message}
-          onChange={(e) => setMessage(e.target.value)} // Update message state on input change
+          onChange={(e) => setMessage(e.target.value)}
+          required
         ></textarea>
         <button
           type="submit"
